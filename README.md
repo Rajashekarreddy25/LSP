@@ -99,3 +99,124 @@ Process P2 {
 👉 signal() increases semaphore (unlock it).
 
 👉 Ensures only one process enters critical section at a time.
+
+
+
+### 🔹 1. Orphan Process
+
+When a parent process terminates but its child is still running, the child becomes an orphan.
+
+In Linux, orphan processes are adopted by init (PID 1 or systemd), so they don’t remain without a parent.
+
+init takes responsibility to clean them up when they finish.
+
+👉 Example
+```
+#include <stdio.h>
+#include <unistd.h>
+
+int main() {
+    int pid = fork();
+
+    if (pid > 0) {
+        printf("Parent exiting... PID=%d\n", getpid());
+        return 0;  // Parent ends
+    }
+    else if (pid == 0) {
+        sleep(5);  // Child runs after parent exits
+        printf("Child running... Orphan now, adopted by init. PID=%d, Parent PID=%d\n",
+                getpid(), getppid());
+    }
+}
+```
+
+✅ Here, the child becomes an orphan because the parent exits before the child.
+
+### 🔹 2. Zombie Process
+
+When a child finishes execution but the parent hasn’t collected its exit status using wait() or waitpid(), it becomes a zombie.
+
+Zombie = “dead but still in process table” (has PID entry but no resources).
+
+Too many zombies can waste PIDs.
+
+👉 Example
+```
+#include <stdio.h>
+#include <unistd.h>
+
+int main() {
+    int pid = fork();
+
+    if (pid == 0) {
+        printf("Child finished. PID=%d\n", getpid());
+        return 0;  // Child exits
+    }
+    else {
+        sleep(20);  // Parent doesn't call wait(), child becomes zombie
+        printf("Parent exiting...\n");
+    }
+}
+
+```
+✅ Run ps -l while parent is sleeping, you’ll see the child in Z (zombie) state.
+
+### 🔹 3. Daemon Process
+
+A daemon is a process that runs in the background, usually providing a service (like sshd, cron, httpd).
+
+They are independent of any terminal and usually started at boot time.
+
+Typically created by double fork technique:
+
+Parent forks → child continues.
+
+Child creates a new session (setsid()) → detaches from terminal.
+
+Child forks again → grandchild runs as a daemon, no controlling terminal.
+
+👉 Example Skeleton (Daemon creation)
+```
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+
+int main() {
+    pid_t pid = fork();
+
+    if (pid < 0) exit(1);
+    if (pid > 0) exit(0);   // Parent exits
+
+    // Child becomes session leader
+    if (setsid() < 0) exit(1);
+
+    pid = fork();           // Second fork
+    if (pid < 0) exit(1);
+    if (pid > 0) exit(0);   // First child exits
+
+    // Daemon process runs here
+    while (1) {
+        sleep(10);
+        // background task
+    }
+}
+```
+
+✅ This process will run in the background as a daemon.
+
+🔹 Summary (Tabular Form)
+
+| Process Type | How it Happens                                     | Who Adopts/Handles It                     | Example                         |
+| ------------ | -------------------------------------------------- | ----------------------------------------- | ------------------------------- |
+| **Orphan**   | Parent exits before child                          | `init` (PID 1) adopts it                  | Child sleeps while parent exits |
+| **Zombie**   | Child exits but parent doesn’t `wait()`            | Stays in process table until parent waits | Parent sleeps, child exits      |
+| **Daemon**   | Special background process, detached from terminal | Runs independently                        | `cron`, `sshd`                  |
+
+👉 So:
+
+Orphan = Parent gone
+
+Zombie = Child gone but parent lazy
+
+Daemon = Background worker
