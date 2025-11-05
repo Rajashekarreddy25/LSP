@@ -311,8 +311,11 @@ child process
 
 #### 🧠 Explanation of Output
 Process	x value	Output Explanation
+
 Child	10	Prints “child process” and exits with code 0
+
 Parent	20	Waits for child, prints WEXITSTATUS=0 and x=20
+
 #### ✅ Key Takeaways
 
 After fork(), both parent and child have independent copies of data.
@@ -359,23 +362,31 @@ int main() {
 ```
 ### 🧠 Expected Output Example
 Parent process started (PID: 694)
+
 Address of x in parent: 0x5c3cdb41c010, Value of x: 20
 
 Child process (PID: 695, PPID: 694)
+
 Address of x in child: 0x5c3cdb41c010, Value of x before change: 20
+
 Child modified x to 10
+
 Address of x in child (after change): 0x5c3cdb41c010
 
 Parent process (PID: 694) resumed after child exit.
+
 Address of x in parent: 0x5c3cdb41c010, Value of x: 20
+
 Child exit status: 0
 
 ### 🔍 Explanation
 
 Both parent and child initially show the same memory address for x.
+
 → This is because at the time of fork(), they share the same physical pages (due to Copy-On-Write).
 
 When the child modifies x, the OS creates a new physical copy of the page for the child.
+
 → That’s why even though the virtual addresses are identical, they point to different physical memory.
 
 The parent’s value remains unchanged (still 20), proving that each process has its own independent copy after modification.
@@ -393,9 +404,11 @@ When a process calls fork(), the child process needs to have the same memory ima
 So, instead of copying everything right away, the OS does this smart thing:
 
 Both parent and child share the same physical memory pages initially (read-only).
+
 When either process tries to modify a page, the OS creates a private copy of that page for that process.
 
 That’s why it’s called Copy-On-Write —
+
 the copy happens only when a write occurs.
 
 ### ⚙️ How it works in steps
