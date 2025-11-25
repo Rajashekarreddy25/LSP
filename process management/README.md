@@ -1,5 +1,5 @@
 # process management
-✅ 1. Explain the concept of process creation in operating systems.
+##### ✅ 1. Explain the concept of process creation in operating systems.
 
 Process creation means creating a new process from an existing one.
 In Linux:
@@ -12,7 +12,7 @@ The original is called the parent
 
 Both processes run independently
 
-✅ 2. Differentiate between fork() and exec() system calls.
+##### ✅ 2. Differentiate between fork() and exec() system calls.
 | **fork()**                         | **exec()**                          |
 | ---------------------------------- | ----------------------------------- |
 | Creates a **new process (child)**  | Replaces the **current process**    |
@@ -26,7 +26,7 @@ Simple:
 fork() = make a new process
 exec() = run a new program inside the same process
 
-✅ 3. Write a C program to demonstrate the use of fork().
+##### ✅ 3. Write a C program to demonstrate the use of fork().
 ```
 #include <stdio.h>
 #include <unistd.h>
@@ -42,7 +42,7 @@ int main() {
     return 0;
 }
 ```
-✅ 4. What is the purpose of the wait() system call?
+##### ✅ 4. What is the purpose of the wait() system call?
 
 wait() is used by the parent process to:
 
@@ -52,7 +52,7 @@ Prevent creation of zombie processes
 
 Get the exit status of the child
 
-✅ 5. Describe the role of exec() family of functions.
+##### ✅ 5. Describe the role of exec() family of functions.
 
 exec() functions (execl, execv, execvp, etc.) are used to:
 
@@ -64,7 +64,7 @@ Keep the same PID, but new code runs
 
 Used in shells, system utilities, etc.
 
-✅ 6. Write a C program to illustrate execvp().
+##### ✅ 6. Write a C program to illustrate execvp().
 ```
 #include <stdio.h>
 #include <unistd.h>
@@ -78,7 +78,7 @@ int main() {
     return 0;
 }
 ```
-✅ 7. How does vfork() differ from fork()?
+##### ✅ 7. How does vfork() differ from fork()?
 
 | **fork()**                                         | **vfork()**                                              |
 | -------------------------------------------------- | -------------------------------------------------------- |
@@ -87,7 +87,7 @@ int main() {
 | Parent & child run independently                   | Parent is **blocked** until child calls exec() or exit() |
 | Safe                                               | Dangerous (sharing memory)                               |
 
-✅ 8. Significance of getpid() and getppid().
+##### ✅ 8. Significance of getpid() and getppid().
 
 getpid() → returns PID of current process
 
@@ -95,7 +95,7 @@ getppid() → returns parent’s PID
 
 Useful for debugging and process management.
 
-✅ 9. Explain the concept of process termination in UNIX-like OS.
+##### ✅ 9. Explain the concept of process termination in UNIX-like OS.
 
 A process ends when:
 
@@ -113,10 +113,10 @@ Process becomes a zombie until parent calls wait()
 
 Kernel frees resources
 
-✅ 10. Write a C program to create a child process using fork() and print its PID.
+#####✅ 10. Write a C program to create a child process using fork() and print its PID.
+```
 #include <stdio.h>
 #include <unistd.h>
-
 int main() {
     int pid = fork();
 
@@ -128,3 +128,4 @@ int main() {
 
     return 0;
 }
+```
