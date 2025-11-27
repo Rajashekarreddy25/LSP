@@ -469,3 +469,176 @@ int main() {
     return 0;
 }
 ```
+
+
+#### 31. Discuss the role of the execv() function in the exec() family of calls.
+
+execv() replaces the current process image with a new program.
+It takes the program path and an argument array.
+
+Does not search PATH
+
+Replaces current process (no return on success)
+
+Used when arguments must be passed as an array
+
+Syntax:
+```
+int execv(const char *path, char *const argv[]);
+
+```
+#### 32. Write a C program to create a process using fork() and pass arguments to the child process.
+
+```
+#include <stdio.h>
+#include <unistd.h>
+
+int main() {
+    pid_t pid = fork();
+
+    if (pid == 0) {
+        char *args[] = {"echo", "Hello from Child", NULL};
+        execvp("echo", args);
+    } else {
+        printf("Parent: Child PID = %d\n", pid);
+    }
+    return 0;
+}
+```
+#### 33. Explain the significance of process identifiers (PIDs) in process management.
+
+PIDs are unique IDs assigned to processes.
+
+Significance:
+
+Used by OS to track and manage processes
+
+Required for signaling (kill, wait, waitpid)
+
+Helps trace process hierarchy
+
+Helps debugging and monitoring (top, ps)
+
+#### 34. Discuss the concept of orphan processes and how they are handled in UNIX-like operating systems.
+
+An orphan process is a child whose parent has terminated.
+
+How handled:
+
+They are adopted by init/systemd (PID 1)
+
+PID 1 becomes their new parent
+
+Systemd automatically performs wait() to avoid zombies
+
+#### 35. Write a program in C to demonstrate process synchronization using semaphores.
+
+```
+#include <stdio.h>
+#include <semaphore.h>
+#include <pthread.h>
+
+sem_t sem;
+
+void* worker(void* arg) {
+    sem_wait(&sem);
+    printf("Critical Section Accessed\n");
+    sem_post(&sem);
+    return NULL;
+}
+
+int main() {
+    pthread_t t1, t2;
+
+    sem_init(&sem, 0, 1);
+
+    pthread_create(&t1, NULL, worker, NULL);
+    pthread_create(&t2, NULL, worker, NULL);
+
+    pthread_join(t1, NULL);
+    pthread_join(t2, NULL);
+
+    sem_destroy(&sem);
+}
+```
+
+#### 36. Describe the concept of process priority and how it is managed in operating systems.
+
+Process priority determines how much CPU time a process receives.
+
+Management:
+
+OS scheduler assigns priorities
+
+Users can change using nice() or renice
+
+Higher priority = more CPU time
+
+Lower nice value = higher priority
+
+#### 37. Explain the purpose of the fork() system call in creating copy-on-write (COW) processes.
+
+With Copy-on-Write, fork() does NOT duplicate memory pages immediately.
+
+Purpose:
+
+Parent and child share the same pages
+
+Pages are copied only when modified
+
+Improves performance and reduces memory usage
+
+Modern Linux fork is highly optimized due to COW.
+
+#### 38. Discuss the role of the execvp() function in searching for executable files.
+
+execvp() is similar to execv() but automatically searches executable files in the PATH environment variable.
+
+execv() → needs full path
+
+execvp() → searches PATH directories
+
+Syntax:
+
+int execvp(const char *file, char *const argv[]);
+
+#### 39. Write a C program to demonstrate the use of the execvpe() function.
+
+```
+#define _GNU_SOURCE
+#include <stdio.h>
+#include <unistd.h>
+
+int main() {
+    char *argv[] = {"env", NULL};
+    char *envp[] = {"MYVAR=HelloWorld", NULL};
+
+    execvpe("env", argv, envp);
+
+    perror("execvpe failed");
+    return 1;
+}
+```
+#### 40. Explain the concept of process context switching and its impact on system performance.
+
+A context switch occurs when the CPU switches from one process to another.
+
+What is saved:
+
+Program counter
+
+CPU registers
+
+Memory mappings
+
+Scheduling info
+
+Impact:
+
+Adds overhead → reduces CPU efficiency
+
+More processes = more switching
+
+Lightweight threads reduce switching costs
+
+Efficient OS schedulers minimize context switching for performance.
