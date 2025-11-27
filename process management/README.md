@@ -317,3 +317,155 @@ A root program can switch to a normal user:
 ```
 setuid(1000);
 ```
+
+#### 21. Explain the concept of process groups and their significance in UNIX-like operating systems.
+
+A process group is a collection of related processes.
+
+Identified by a PGID
+
+Used for job control (foreground/background jobs)
+
+Signals can be sent to the whole group
+
+Pipelines operate as a single process group
+
+#### 22. Write a C program to demonstrate the use of waitpid() for process synchronization.
+```
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/wait.h>
+
+int main() {
+    int pid = fork();
+
+    if (pid == 0) {
+        printf("Child running...\n");
+        sleep(2);
+        return 5;
+    } else {
+        int status;
+        waitpid(pid, &status, 0);
+        printf("Child exited with status: %d\n", WEXITSTATUS(status));
+    }
+    return 0;
+}
+```
+ #### 23. Discuss the role of the execle() function in the exec() family of calls.
+
+execle():
+
+Executes a new program
+
+Allows passing a custom environment
+
+Syntax:
+```
+
+execle(path, arg1, arg2, ..., NULL, envp);
+```
+#### 24. Describe the purpose of the nice() system call in process scheduling.
+
+nice() adjusts process priority.
+
+Range: −20 (high priority) → 19 (low priority)
+
+Higher values = lower priority
+
+Only root can use negative values
+```
+nice(10);
+```
+
+#### 25. Write a program in C to create a daemon process.
+```
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/stat.h>
+
+int main() {
+    int pid = fork();
+    if (pid > 0) exit(0);
+
+    setsid();
+    chdir("/");
+    umask(0);
+
+    freopen("/dev/null", "r", stdin);
+    freopen("/dev/null", "w", stdout);
+    freopen("/dev/null", "w", stderr);
+
+    while (1) {
+        sleep(10);
+    }
+    return 0;
+}
+```
+#### 26. Explain the role of the getpid() and getppid() functions in process management.
+
+getpid() → returns current process ID
+
+getppid() → returns parent process ID
+
+Used for monitoring and debugging process hierarchy.
+
+#### 27. Discuss the difference between the fork() and clone() system calls.
+
+fork()
+
+Creates a new process with separate memory
+
+Traditional UNIX process creation
+
+clone()
+
+Allows fine control over what is shared
+
+Used internally to create threads
+
+More flexible but lower-level
+
+#### 28. Write a C program to demonstrate the use of the system() function for executing shell commands.
+```
+#include <stdlib.h>
+#include <stdio.h>
+
+int main() {
+    printf("Executing shell command...\n");
+    system("ls -l");
+    return 0;
+}
+```
+#### 29. Explain the concept of process states in UNIX-like operating systems.
+
+Process states include:
+
+R – Running
+
+S – Sleeping
+
+D – Uninterruptible sleep
+
+Z – Zombie
+
+T – Stopped
+
+#### 30. Describe the purpose of the chroot() system call and provide an example.
+
+chroot() changes the root directory of a process (creates a chroot jail).
+
+```
+#include <unistd.h>
+#include <stdio.h>
+
+int main() {
+    if (chroot("/newroot") == 0) {
+        chdir("/");
+        printf("chroot successful.\n");
+    } else {
+        perror("chroot failed");
+    }
+    return 0;
+}
+```
