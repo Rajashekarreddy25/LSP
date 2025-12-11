@@ -85,7 +85,7 @@ A process needing 50 KB cannot be allocated even though total free memory is eno
 
 
 
-✅ 11. How is fragmentation managed in memory allocation?
+ 11. How is fragmentation managed in memory allocation?
 
 Linux handles fragmentation using:
 
@@ -106,7 +106,7 @@ Big chunks allocated via virtual memory mapping → avoids heap fragmentation.
 Moves memory blocks to create a large continuous free block.
 (Not common in Linux user space, but used internally in the kernel.)
 
-###### ✅ 12. Describe the concept of paging.
+######  12. Describe the concept of paging.
 
 Paging divides memory into fixed-size blocks:
 
@@ -120,7 +120,7 @@ Each virtual page is mapped to a physical frame via page tables.
 ✔️ Allows virtual memory
 ✔️ Allows processes to use more memory than RAM (using swap)
 
-##### ✅ 13. Explain segmentation.
+#####  13. Explain segmentation.
 
 Segmentation divides memory into variable-sized logical segments, such as:
 
@@ -138,7 +138,7 @@ Each segment has:
 
 Segmentation reflects program structure.
 
-##### ✅ 14. Difference between paging and segmentation
+#####  14. Difference between paging and segmentation
 
 | **Paging**                        | **Segmentation**                          |
 | --------------------------------- | ----------------------------------------- |
@@ -148,7 +148,7 @@ Segmentation reflects program structure.
 | Address → page number + offset    | Address → segment number + offset         |
 | Used heavily in Linux             | Not used much; Linux mainly uses paging   |
 
-##### ✅ 15. Define page table.
+#####  15. Define page table.
 
 A page table is a data structure maintained by the OS that maps:
 
@@ -156,7 +156,7 @@ A page table is a data structure maintained by the OS that maps:
 
 Every process has its own page table in Linux.
 
-##### ✅ 16. Define Memory Management Unit (MMU).
+#####  16. Define Memory Management Unit (MMU).
 
 The MMU is hardware that handles:
 
@@ -170,7 +170,7 @@ The MMU is hardware that handles:
 
 Located in the CPU.
 
-##### ✅ 17. Explain the role of MMU in memory management.
+#####  17. Explain the role of MMU in memory management.
 
 MMU performs:
 
@@ -188,7 +188,7 @@ Speeds up translation.
 
 ✔️ Supporting paging and virtual memory
 
-##### ✅ 18. Describe the Translation Lookaside Buffer (TLB).
+#####  18. Describe the Translation Lookaside Buffer (TLB).
 
 TLB is a cache inside MMU storing recently used page table entries.
 
@@ -198,7 +198,7 @@ Purpose:
 
  - Avoid frequent page table lookups
 
-##### ✅ 19. What is a TLB miss? How is it handled?
+#####  19. What is a TLB miss? How is it handled?
 - TLB Miss = Requested virtual page not found in TLB
 How it is handled:
 
@@ -210,7 +210,7 @@ How it is handled:
 
 4. If the page is not in RAM → page fault occurs
 
-##### ✅ 20. Discuss the working principle of MMU.
+#####  20. Discuss the working principle of MMU.
 
 MMU works in this sequence:
 
@@ -230,7 +230,7 @@ MMU works in this sequence:
 
 7. MMU retries access
 
-##### ✅ 21. Explain the concept of address translation in MMU.
+#####  21. Explain the concept of address translation in MMU.
 
 - Address translation = converting a virtual address into a physical address.
 
@@ -246,7 +246,7 @@ Steps:
 
 3.Physical address = frame number + offset
 
-###### ✅ 22. How does MMU support virtual memory?
+######  22. How does MMU support virtual memory?
 
 MMU enables virtual memory by:
 
@@ -260,7 +260,7 @@ MMU enables virtual memory by:
 
 This gives each process a huge memory space, even if RAM is small.
 
-##### ✅ 23. Describe the process of page table traversal in MMU.
+#####  23. Describe the process of page table traversal in MMU.
 
 Page table traversal steps:
 
@@ -278,7 +278,7 @@ Page table traversal steps:
 
 7. Loads entry into TLB
 
-##### ✅ 24. What is page fault handling in MMU?
+#####  24. What is page fault handling in MMU?
 
 Page fault occurs when a virtual page is:
 
@@ -306,7 +306,7 @@ Page Fault Handling Steps:
 
 - If invalid → segmentation fault (SIGSEGV).
 
-##### ✅ 25. Explain the page replacement algorithms used in MMU.
+#####  25. Explain the page replacement algorithms used in MMU.
 
 When RAM is full, MMU + OS must select a page to remove.
 
@@ -322,7 +322,7 @@ Common algorithms:
 
 These decide which page to swap out.
 
-##### ✅ 26. Define page replacement algorithms.
+#####  26. Define page replacement algorithms.
 
 - A page replacement algorithm chooses which memory page to remove from RAM when a new page must be loaded, but RAM is full.
 
@@ -332,7 +332,7 @@ Goal:
 
 - Improve performance
 
-##### ✅ 27. Describe FIFO page replacement algorithm.
+#####  27. Describe FIFO page replacement algorithm.
 
 FIFO = First-In-First-Out
 The page loaded earliest is removed first.
@@ -345,15 +345,15 @@ Steps:
 
 3. Simple, but not optimal.
 
-##### ✅ 28. Discuss the optimal page replacement algorithm.
+#####  28. Discuss the optimal page replacement algorithm.
 
---Optimal algorithm replaces the page that will not be used for the longest time in the future.
+- Optimal algorithm replaces the page that will not be used for the longest time in the future.
 
 - Best page-fault performance, but impossible to implement in real systems (future is unknown).
 
 - Used for theoretical comparison.
 
-##### ✅ 29. Explain the LRU (Least Recently Used) page replacement algorithm.
+#####  29. Explain the LRU (Least Recently Used) page replacement algorithm.
 
 LRU removes the page that has not been used for the longest time.
 
@@ -369,3 +369,404 @@ LRU uses:
 - Hardware support (in real MMUs)
 
 It performs close to optimal.
+
+
+######  30. What is the Clock Page Replacement Algorithm?
+
+Clock Algorithm is an improved version of FIFO.
+It uses a circular buffer (like a clock) of pages with a use/ reference bit for each page.
+
+Steps:
+
+1. A pointer (clock hand) moves over pages.
+
+2. For each page it checks reference bit (R):
+
+- R = 1 → Recently used → Set R = 0 and skip
+
+- R = 0 → Replace this page
+
+3. Continue rotating until a replaceable page is found.
+
+✔️ Faster and better than FIFO.
+
+#####  31. Advantages and Disadvantages of Page Replacement Algorithms
+FIFO
+
+✔️ Easy to implement
+✖️ Removes oldest page → may remove important pages
+✖️ Belady’s anomaly
+
+Optimal
+
+✔️ Lowest page faults
+✖️ Requires future knowledge → not practical
+
+LRU
+
+✔️ Close to optimal
+✖️ Needs hardware counters or stack → costly
+
+Clock
+
+✔️ Efficient and simple
+✔️ Good performance
+✖️ Still approximate, not perfect
+
+######  32. Compare and contrast different page replacement algorithms
+
+| Algorithm     | Method                      | Performance | Practicality      |
+| ------------- | --------------------------- | ----------- | ----------------- |
+| FIFO          | Replace oldest              | Poor        | High (simple)     |
+| Optimal       | Replace farthest future use | Best        | Not implementable |
+| LRU           | Replace least recently used | Very good   | Medium cost       |
+| Clock         | Approximates LRU            | Good        | Highly practical  |
+| Second Chance | FIFO + reference bit        | Good        | Practical         |
+
+#####  33. NRU (Not Recently Used) Page Replacement Algorithm
+
+Pages are classified into 4 classes using Reference bit (R) and Modified bit (M):
+
+| Class | R | M | Meaning                |
+| ----- | - | - | ---------------------- |
+| 0     | 0 | 0 | Not used, not modified |
+| 1     | 0 | 1 | Modified but not used  |
+| 2     | 1 | 0 | Used but clean         |
+| 3     | 1 | 1 | Used and modified      |
+
+
+Algorithm:
+
+1. Prefer to replace lowest class (0).
+
+2. Higher class → less chance of replacement.
+
+#####  34. Second Chance Page Replacement Algorithm
+
+Improved FIFO.
+
+Steps:
+
+1. Select oldest page
+
+2. If R = 0 → Replace it
+
+3. If R = 1 → Set R = 0 and move it to end of queue
+
+This gives frequently used pages a “second chance”.
+
+######  35. Enhancements to Basic Page Replacement Algorithms
+
+1. Use + Dirty bit
+
+2. Clock-Pro (used in Linux)
+
+3. Adaptive replacement (ARC)
+
+4. Working-set based algorithms
+
+5. Two-handed clock algorithm
+
+Linux uses advanced variants combining LRU + Clock.
+
+
+#####  36. Define segmentation in memory management.
+
+Segmentation divides memory into logical units called segments:
+
+- Code
+
+- Data
+
+- Stack
+
+- Heap
+
+Each segment has a base and limit.
+
+#####  37. Benefits of segmentation
+
+✔️ Matches program structure
+✔️ Supports sharing (code segment shareable)
+✔️ Easy protection per segment
+✔️ Allows variable-sized memory regions
+
+#####  38. Disadvantages of segmentation
+
+✖️ Causes external fragmentation
+✖️ Complex memory allocation
+✖️ Harder to manage in large systems
+✖️ Variable-size allocation overhead
+
+#####  39. Describe the implementation of segmentation.
+
+Segment table stores:
+
+- Segment base address
+
+- Segment limit
+
+- Access permissions
+
+Virtual address = segment number + offset
+
+CPU uses segment registers to translate to physical memory.   
+
+#####  40. Segmentation fault and its causes
+
+- A segmentation fault (SIGSEGV) occurs when process accesses invalid memory.
+
+Causes:
+
+- Accessing NULL pointers
+
+- Buffer overflow
+
+- Writing into read-only segment
+
+- Accessing memory outside allocated range
+
+- Stack overflow
+
+Linux sends SIGSEGV to terminate program.
+
+#####  41. Explain the concept of segment registers.
+
+Registers that store:
+
+- Base address of segment
+
+- Size limit
+
+- Access rights
+
+Examples in x86:
+
+- CS (Code Segment)
+
+- DS (Data Segment)
+
+- SS (Stack Segment)
+
+#####  42. What is a segment table?
+
+A table containing entries for each segment:
+
+- Base address
+
+- Limit
+
+- Protection bits
+
+Used by CPU + MMU for address translation.
+
+#####  43. How does segmentation support protection and sharing?
+
+- Each segment has access rights (read/write/execute) → protection
+
+- Segments like code can be shared between processes → sharing
+
+- Illegal access causes segmentation fault
+  
+#####  44. Discuss segmentation with paging approach.
+
+Used in many systems (e.g., x86 protected mode).
+
+Steps:
+
+1. Program divided into segments
+
+2. Each segment divided into pages
+
+3. Pages mapped to physical frames
+
+This removes fragmentation problems.
+
+#####  45. Compare segmentation vs paging
+
+| Feature       | Segmentation          | Paging               |
+| ------------- | --------------------- | -------------------- |
+| Size          | Variable              | Fixed                |
+| Fragmentation | External              | No external          |
+| Logical view  | Logical units         | Physical units       |
+| Protection    | Per segment           | Per page             |
+| Useful for    | Human view of program | Hardware memory mgmt |
+
+#####  46. Define memory fragmentation.
+
+Condition where free memory is split into small blocks, making it unusable.
+
+#####  47. Explain the causes of memory fragmentation.
+
+- Variable-size allocations
+
+- Frequent malloc/free operations
+
+- Long-running processes
+
+- Segmentation (variable blocks)
+
+- Different memory lifetimes
+
+#####  48. How does memory fragmentation affect system performance?
+
+- More page faults
+
+- Slower allocations
+
+-Low RAM utilization
+
+- Kernel may invoke OOM killer
+
+- Poor cache locality
+
+#####  49. Techniques to reduce fragmentation
+
+1. Paging
+
+2. Memory pools
+
+3. Slab allocator (Linux kernel)
+
+4. Binning by size (tcmalloc, jemalloc)
+
+5. Compaction
+
+6. Best-fit / Buddy Allocator
+
+##### 50. Explain compaction as a technique for reducing fragmentation.
+
+Compaction moves allocated blocks together to create one large free region.
+
+Example:
+```
+A    B      C   D
+↓ compact
+A B C D
+free space: large block
+```
+#####  52. Working of memory compaction algorithms
+
+Steps:
+
+1. Identify scattered free blocks
+
+2. Move allocated blocks towards one end
+
+3. Update pointers/addresses
+
+4. Create a continuous free region
+
+Used in:
+
+- Garbage-collected languages
+
+- Kernel buddy allocator
+
+##### 53. Challenges in implementing memory compaction
+
+- Moving memory is expensive
+
+- Needs address updating
+
+- Requires CPU time
+
+- Risk of data corruption
+
+- Complex in real-time systems
+
+Linux uses buddy allocator + compaction carefully.
+
+##### 54. Explain memory fragmentation in embedded systems.
+
+Embedded systems face fragmentation due to:
+
+- Limited RAM
+
+- No virtual memory
+
+- Long uptime
+
+- Dynamic memory usage
+
+Fragmentation can cause:
+
+- System crashes
+
+- Allocation failures
+
+- CPU stalls
+
+#####  55. How does memory allocation impact fragmentation?
+
+- Small frequent allocations → more fragmentation
+
+- Variable size blocks → higher fragmentation
+
+- Poor allocator (first-fit) → more fragmentation
+
+- Using pools → reduces fragmentation
+
+
+#####  56. Define memory mapping.
+
+Mapping between:
+
+- Virtual memory → Physical memory
+
+- File → Virtual memory
+
+- Device → Memory region
+
+Used for:
+
+- Executables
+
+- Shared memory
+
+- Memory-mapped IO
+
+#####  57. Purpose of memory mapping
+
+- Speed up file access
+
+- Reduce RAM usage
+
+- Enable shared memory between processes
+
+- Enable device access in embedded/OS
+
+Linux uses mmap() for mapping.
+
+#####  58. Memory mapping techniques
+
+1. File mapping (mmap a file)
+
+2. Anonymous mapping (RAM mapping)
+
+3. Shared memory mapping
+
+4. Device memory mapping
+
+5. Kernel memory mapping
+
+#####  59. What is memory-mapped I/O?
+
+Memory-mapped I/O maps device registers into the memory address space.
+
+CPU reads/writes device as if reading/writing a memory location.
+
+Used in:
+
+- Embedded systems
+
+- GPU
+
+- Network cards
+
+- UART
+
+- Flash controllers
+
+Example in Linux: accessing /dev/mem or mmap() on device drivers.
+
