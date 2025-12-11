@@ -975,3 +975,243 @@ CPU → L1 → L2 → L3 → RAM → Disk
 ```
 
 Fastest memories are closest to CPU.
+
+##### 76. Define memory protection.
+
+Mechanism that ensures processes cannot access memory belonging to:
+
+- Kernel
+
+- Other processes
+
+- Invalid addresses
+
+##### 77. Need for memory protection
+
+- Prevent crashing of system
+- Security between processes
+- Safe multitasking
+- Prevent buffer overflow attacks
+- Protect kernel code
+
+
+##### 79. What is segmentation fault?
+
+A segmentation fault is an error when a process tries to access unauthorized memory.
+Linux sends SIGSEGV.
+
+Causes:
+
+- NULL pointer
+
+- Invalid array index
+
+- Writing read-only memory
+
+- Stack overflow
+
+- Uninitialized pointers
+
+#### TECHNIQUES FOR MEMORY PROTECTION
+
+##### 78. Techniques for implementing memory protection
+
+- Paging with permissions (R/W/X)
+
+- Segmentation
+
+- Privilege levels (user mode vs kernel mode)
+
+- Bounds checking
+
+- ASLR (Address Space Layout Randomization)
+
+- Stack canaries
+
+- NX bit (no execute bit)
+
+####  PRIVILEGE LEVELS
+
+##### 80. Role of privilege levels in memory protection
+
+Two modes in Linux:
+
+- User mode → restricted
+
+- Kernel mode → full access
+
+User mode programs CANNOT:
+
+- access kernel memory
+
+-access device registers
+
+- modify page tables
+
+This prevents malicious code from taking over the system.
+
+####  MECHANISM OF MEMORY PROTECTION
+
+##### 81. Memory protection in modern operating systems
+
+Implemented using:
+
+- Page tables
+
+- TLB entries
+
+- NX bit
+
+- ASLR
+
+- Kernel space separation
+
+- Read-only pages
+
+- Memory isolation for each process
+
+Linux uses MMU + paging + permission bits.
+
+#### SECURITY
+
+##### 82. Security implications of memory protection
+
+- Prevents privilege escalation
+- Prevents one process from reading another’s data
+- Protects passwords and sensitive information
+- Stops malware from injecting code
+- Prevents stack smashing
+
+#### MEMORY ISOLATION
+
+#### 83. Memory isolation
+
+Each process gets its own virtual address space.
+
+Prevents:
+
+- Accidental crashes
+
+- Data corruption
+
+- Security breaches
+
+Linux uses MMU to enforce isolation.
+
+#### CHALLENGES
+
+#### 84. Challenges in implementing memory protection
+
+- Complex page table management
+
+- Performance overhead
+
+- TLB consistency
+
+- Multiprocessor synchronization
+
+- Handling segmentation faults properly
+
+- Implementing correct permissions
+
+#### SECURITY BENEFIT 
+
+##### 85. How memory protection contributes to system security
+
+- Prevents unauthorized access
+- Ensures process isolation
+- Mitigates buffer overflow attacks
+- Protects kernel
+- Prevents malware from modifying memory
+- Supports safe multitasking
+
+  ##### 86. C program using malloc()
+```
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    int *ptr;
+    ptr = (int*)malloc(sizeof(int)); // allocate memory for 1 integer
+
+    
+   if(ptr == NULL) {
+        printf("Memory not allocated\n");
+        return 0;
+    }
+
+   *ptr = 50;
+    printf("Value = %d\n", *ptr);
+
+   free(ptr); // free memory
+    return 0;
+}
+```
+##### 87. C program using calloc() for array
+
+```
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    int n = 5;
+    int *arr = (int*)calloc(n, sizeof(int)); // initializes to 0
+
+    if(arr == NULL) {
+        printf("Memory not allocated\n");
+        return 0;
+    }
+
+    for(int i = 0; i < n; i++)
+        printf("%d ", arr[i]);
+
+    free(arr);
+    return 0;
+}
+```
+
+##### 88. C program using realloc()
+```
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    int *ptr = malloc(3 * sizeof(int));
+
+    for(int i=0; i<3; i++)
+        ptr[i] = i+1;
+
+    ptr = realloc(ptr, 5 * sizeof(int)); // resize
+
+    ptr[3] = 4;
+    ptr[4] = 5;
+
+    for(int i=0; i<5; i++)
+        printf("%d ", ptr[i]);
+
+    free(ptr);
+    return 0;
+}
+```
+##### 89. Allocate memory for linked list node dynamically
+```
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node *next;
+};
+
+int main() {
+    struct Node *node = (struct Node*)malloc(sizeof(struct Node));
+
+    node->data = 10;
+    node->next = NULL;
+
+    printf("Node data = %d\n", node->data);
+
+    free(node);
+    return 0;
+}
+```
