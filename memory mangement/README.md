@@ -770,3 +770,208 @@ Used in:
 
 Example in Linux: accessing /dev/mem or mmap() on device drivers.
 
+##### 60. Explain memory-mapped files.
+
+Memory-mapped files allow a file on disk to be mapped directly into virtual memory, so the file contents can be accessed like an array in RAM.
+
+In Linux:
+```
+void *ptr = mmap(NULL, size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
+```
+
+After mapping:
+
+- Reading memory → reads from file
+
+- Writing memory → writes to file
+
+- Processes do not use read() / write(); they simply access memory.
+
+#####  61. Advantages of memory mapping
+
+-  Faster file access
+-  Reduced system calls → less CPU overhead
+-  Easy to share memory between processes
+-  Automatic caching by OS
+-  Better for large files
+-  Simplifies coding (just pointer access)
+
+#####  62. Drawbacks of memory mapping
+
+- ✖ Cannot map extremely huge files on small RAM systems
+- ✖ Page faults occur frequently at first access
+- ✖ Errors propagate as segmentation faults
+- ✖ Harder to handle random crashes
+- ✖ Not suitable for real-time embedded systems
+
+#####  63. How memory mapping improves performance
+
+-  Eliminates read() / write() calls
+-  No data copying between kernel/user space
+- Uses page cache efficiently
+- Only needed portions of file are loaded into memory (demand paging)
+- OS automatically handles replacement using page replacement algorithms
+
+
+##### 64. Explain memory-mapped graphics.
+
+Graphics hardware exposes a framebuffer (video memory).
+By memory-mapping this framebuffer, programs draw pixels directly by writing memory.
+
+Example:
+```
+uint32_t *fb = mmap(0, size, PROT_READ|PROT_WRITE, MAP_SHARED, fb_fd, 0);
+fb[x + y*width] = 0xFF0000;  // draw a red pixel
+```
+
+Used in:
+
+Linux /dev/fb0
+
+Embedded displays
+
+GPU programming
+
+#####  65. Memory mapping in embedded systems
+
+Used to map:
+
+Sensors
+
+- Flash memory
+
+- I/O registers
+
+- DMA buffers
+
+- LCD framebuffers
+
+Important because:
+
+- Embedded systems have limited RAM
+
+- Faster hardware access
+
+- Efficient device control (UART, SPI)
+
+##### 66. Define cache memory.
+
+- Cache memory is a small, fast memory inside the CPU that stores frequently accessed data.
+
+##### 67. Purpose of cache memory
+
+- Reduce CPU access time
+- Bridge speed gap between CPU and RAM
+- Improve program performance
+- Reduce memory latency
+
+##### 68. Types of cache memory
+1. L1 cache
+
+- Smallest & fastest
+
+- Inside CPU core
+
+- Split into L1-I (instruction) & L1-D (data)
+
+2. L2 cache
+
+- Larger, slower than L1
+
+- Per-core or shared
+
+3. L3 cache
+
+- Large & slower
+
+- Shared among CPU cores
+
+##### 69. Cache Coherence Problem
+
+Occurs in multi-core CPUs when each core has its own cache.
+
+If one core updates a memory location, others must see the updated value.
+
+Solutions:
+
+- MESI protocol
+
+- MOESI protocol
+
+- Snooping
+
+- Directory-based coherence
+
+##### 70. Cache Replacement Policies
+
+Used when cache is full.
+
+Common algorithms:
+
+- LRU (Least Recently Used)
+
+- FIFO
+
+- Random
+
+- Clock (for caches too)
+#####  71. What is cache associativity?
+
+Associativity defines how many places a block can go inside cache.
+
+Types:
+
+- Direct-mapped (1 place)
+
+- 2-way set associative (2 places)
+
+- Fully associative (anywhere)
+
+Higher associativity → lower conflict misses.
+
+##### 72. Working of cache memory
+
+Steps:
+
+1. CPU requests memory address
+
+2. Cache checks if data exists
+
+  - If yes → cache hit
+
+  - If no → cache miss
+
+3. On miss → load block from RAM into cache
+
+4. Return data to CPU
+
+#####  73. Cache hit and cache miss
+
+- Cache hit → Data found in cache
+
+- Cache miss → Data not found; must fetch from RAM
+
+Miss types:
+
+- Cold miss
+
+- Conflict miss
+
+- Capacity miss
+
+##### 74. Importance of cache memory in memory management
+
+- Reduces page faults
+- Speeds up address translation
+- Improves TLB performance
+- Faster context switching
+- Better CPU pipeline utilization
+
+##### 75. Cache memory in memory hierarchy
+
+Cache sits between CPU and RAM:
+```
+CPU → L1 → L2 → L3 → RAM → Disk
+```
+
+Fastest memories are closest to CPU.
