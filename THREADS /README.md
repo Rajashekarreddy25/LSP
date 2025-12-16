@@ -1,5 +1,5 @@
 ### Deadlock
---  A deadlock occurs when a set of processes or threads are permanently blocked, each waiting for a resource held by another.
+-   A deadlock occurs when a set of processes or threads are permanently blocked, each waiting for a resource held by another.
 
 Deadlock happens only if all the following four conditions occur at the same time (called Coffman’s conditions):
 ### Causes 
