@@ -178,3 +178,364 @@ int main()
 | `attr`          | Thread attributes (usually `NULL`) |
 | `start_routine` | Function executed by thread        |
 | `arg`           | Argument passed to function        |
+
+
+
+## 79. Why do we use pthread_create() instead of clone() for creating threads?
+
+- clone() is a low-level Linux system call
+
+- pthread_create() is a POSIX standard, portable, high-level API
+
+**Reasons:**
+
+**- pthread_create():**
+
+   - Portable across UNIX/Linux systems
+   
+   - Automatically handles stack, TLS, scheduling
+   
+   - Easier and safer to use
+
+**- clone():**
+
+  - OS-specific
+  
+  - Requires manual stack and flags management
+  
+  - Error-prone
+
+✅ Conclusion:
+- pthread_create() internally uses clone() but provides abstraction and safety.
+
+## 80. Why does a stack grow?
+
+**Stack grows to:**
+
+- Store function call information
+
+- Local variables
+
+- Function parameters
+
+- Return addresses
+
+**Direction:**
+
+- Stack typically grows downwards (high → low memory)
+
+**Example:**
+```
+void func() {
+   int x;   // stored on stack
+}
+```
+## 81. What segments are shared by multiple threads within a process?
+
+**- Threads share:**
+
+  - Code (Text) segment
+  
+  - Data segment
+  
+  - BSS segment
+  
+  - Heap
+  
+  - File descriptors
+  
+  - Global variables
+
+**- Each thread has:**
+
+  - Its own stack
+  
+  - Its own registers
+  
+  - Its own thread ID
+
+## 82. Can you fetch the thread entry point return value in the main thread?
+
+**- Yes**
+
+Use **pthread_join():**
+```
+void *ret;
+pthread_join(thread, &ret);
+```
+
+- The value returned from the thread function is received by the main thread
+
+## 83. What happens when main() function is invoked?
+
+**Steps:**
+
+1. Program loaded into memory
+
+2. Stack, heap, data segments initialized
+
+3. Runtime calls main()
+
+4. Execution begins from main()
+
+main() is not the first instruction,**_start() **is.
+
+## 84. What happens when CPU stops executing?
+
+CPU may stop due to:
+
+  - Context switch
+  
+  - Interrupt
+  
+  - System call
+  
+  - Halt instruction
+  
+  - Power management
+
+OS saves:
+
+  - Program Counter
+  
+  - Registers
+  
+  - Stack pointer
+
+Into PCB (Process Control Block)
+
+## 85. During context switch, which instruction copies CPU registers to PCB?
+
+- There is no single instruction.
+
+OS kernel code saves registers using:
+
+  - Assembly instructions
+  
+  - Stack push operations
+  
+  - Architecture-specific save routines
+
+**Example (conceptual):**
+```
+push eax
+push ebx
+```
+## 86. How do you create a separate process?
+
+**Using:
+**
+
+- fork()
+
+- exec()
+
+**Example:
+**
+```
+pid_t pid = fork();
+```
+
+Parent → original process
+
+Child → new process
+
+## 87. How does a server create a separate thread?
+
+**Server uses:**
+
+- pthread_create()
+
+
+**For:**
+
+- Each client request
+
+- Parallel request handling
+
+**Example:**
+```
+pthread_create(&tid, NULL, handle_client, arg);
+```
+## 88. Advantage of Thread over Process
+
+| Threads         | Processes       |
+| --------------- | --------------- |
+| Faster creation | Slower creation |
+| Shared memory   | Separate memory |
+| Low overhead    | High overhead   |
+| Efficient IPC   | Costly IPC      |
+
+
+✅ Best for parallel tasks
+
+## 89. Advantage of Process over Thread
+
+- Better isolation
+
+- One process crash won’t affect others
+
+- Higher security
+
+- Separate address space
+
+✅ Best for fault isolation
+
+## 90. How to overcome synchronization issues with global variables?
+
+Use:
+
+ - Mutex
+
+ - Semaphore
+
+ - Spinlock
+
+ - Atomic operations
+
+**Example:**
+```
+pthread_mutex_lock(&lock);
+global++;
+pthread_mutex_unlock(&lock);
+```
+## 91. How much CPU time is given to user and kernel threads?
+
+- CPU time is not fixed
+
+- Allocated by scheduler
+
+- Depends on:
+
+  - Priority
+
+  - Scheduling policy
+
+ User and kernel threads get equal scheduling opportunity
+
+## 92. Difference between POSIX and System-V
+| POSIX       | System-V     |
+| ----------- | ------------ |
+| Portable    | Older UNIX   |
+| pthreads    | Sys-V IPC    |
+| Simple APIs | Complex APIs |
+| Modern      | Legacy       |
+
+## 93. Points to remember when using mutex locks
+
+- Lock before critical section
+
+- Unlock after critical section
+
+- Avoid deadlock
+
+- Same thread must unlock
+
+- Always initialize mutex
+
+## 94. What do you achieve using pthread_mutex_lock()?
+
+- Mutual exclusion
+
+- Prevent race condition
+
+- Ensure one thread accesses critical section at a time
+
+## 95. Difference between Mutex and Semaphore
+
+| Mutex              | Semaphore               |
+| ------------------ | ----------------------- |
+| Binary             | Counting                |
+| Owner-based        | No ownership            |
+| One thread unlocks | Any thread can signal   |
+| Used for CS        | Used for resource count |
+
+
+## 97. Variants of pthread_mutex_lock()
+
+- pthread_mutex_lock() – blocks
+
+- pthread_mutex_trylock() – non-blocking
+
+- pthread_mutex_timedlock() – timeout based
+
+## 97. How to create a thread?
+```
+pthread_create(&tid, NULL, func, arg);
+
+```
+**Steps:**
+
+1. Declare pthread_t
+
+2. Call pthread_create()
+
+3. Join or detach
+
+## 98. Explain compilation of a thread program
+```
+gcc file.c -o output -pthread
+
+```
+
+- pthread enables:
+
+ - Thread-safe libc
+
+ - Proper linking
+
+## 99. Arguments of pthread_create()
+```
+int pthread_create(
+    pthread_t *thread,
+    const pthread_attr_t *attr,
+    void *(*start_routine)(void *),
+    void *arg
+);
+```
+## 100. Explain return value of thread
+
+- Thread returns:
+```
+return value;
+```
+
+- Collected using:
+```
+pthread_join(thread, &ret);
+```
+## 101. Working of pthread_mutex_trylock()
+
+- Tries to lock mutex
+
+- If already locked → returns immediately
+
+- Does NOT block
+
+- Use case: avoid waiting
+
+## 102. Application of pthread_mutex_timedlock()
+
+- Locks mutex with timeout
+
+- Avoids deadlock
+
+- Used in real-time systems
+
+## 103. What is Mutual Exclusion?
+
+- Technique to ensure:
+
+  - Only one thread enters critical section
+
+- Achieved using:
+
+   - Mutex
+   
+   - Semaphore
+
+ **Example:** 
+
+pthread_mutex_lock(&lock);
+// critical section
+pthread_mutex_unlock(&lock);
