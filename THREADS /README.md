@@ -3,7 +3,7 @@
 
 Deadlock happens only if all the following four conditions occur at the same time (called Coffman’s conditions):
 ### Causes 
-1️. Mutual Exclusion
+**1️.** Mutual Exclusion
 
 At least one resource must be non-shareable.
 
@@ -12,7 +12,7 @@ Only one process/thread can use the resource at a time.
 📌 Example:
 A mutex lock protecting a shared variable.
 
-2️. Hold and Wait
+**2️.** Hold and Wait
 
 A process holds at least one resource and is waiting for additional resources that are currently held by others.
 
@@ -20,7 +20,7 @@ A process holds at least one resource and is waiting for additional resources th
 Thread A holds Lock1 and waits for Lock2
 Thread B holds Lock2 and waits for Lock1
 
-3️. No Preemption
+**3️.** No Preemption
 
 Resources cannot be forcibly taken away from a process.
 
@@ -29,7 +29,7 @@ They must be released voluntarily after use.
 📌 Example:
 Once a thread acquires a mutex, the OS cannot take it back until the thread releases it.
 
-4️. Circular Wait
+**4️.** Circular Wait
 
 A circular chain of processes exists where each process waits for a resource held by the next process in the chain.
 
@@ -61,7 +61,7 @@ int pthread_create(
 
 - It has 4 arguments.
 
-1️ . pthread_t *thread → Thread ID (Output)
+**1️.** pthread_t *thread → Thread ID (Output)
 What it is:
 
 - Pointer to a variable that will store the thread identifier
@@ -83,35 +83,38 @@ Why needed:
 
 - OS assigns the thread ID, you just store it.
 
-2️ . const pthread_attr_t *attr → Thread Attributes
+**2️.** const pthread_attr_t *attr → Thread Attributes
 What it is:
 
 - Controls thread behavior (stack size, scheduling, detached state)
 
 Common usage:
+```
 NULL
+```
 
-
-➡ Uses default attributes
+- ➡ Uses default attributes
 
 Advanced usage:
+```
 pthread_attr_t attr;
 pthread_attr_init(&attr);
 pthread_create(&tid, &attr, func, arg);
-
+```
 
 - For most programs & exams → use NULL
 
-3️ . void *(*start_routine)(void *) → Thread Function
+**3️.** void *(*start_routine)(void *) → Thread Function
 What it is:
 
-Function executed by the thread
+- Function executed by the thread
 
-This is where the thread starts running
+- This is where the thread starts running
 
 Required function signature:
+```
 void *thread_function(void *arg);
-
+```
 Example:
 ```
 void *worker(void *arg)
@@ -124,7 +127,7 @@ void *worker(void *arg)
 - Mandatory argument
 - Thread always starts execution here
 
-4️ . void *arg → Argument to Thread Function
+**4️.** void *arg → Argument to Thread Function
 What it is:
 
 Data passed to the thread function
@@ -132,14 +135,15 @@ Data passed to the thread function
 Generic pointer (void *)
 
 Example (integer):
+```
 int x = 10;
 pthread_create(&tid, NULL, worker, &x);
-
+```
 
 Inside thread:
-
+```
 int n = *(int *)arg;
-
+```
 - If no argument needed:
 ```
 pthread_create(&tid, NULL, worker, NULL);
@@ -167,7 +171,7 @@ int main()
     return 0;
 }
 ```
-📌 Summary Table (Very Important)
+### Summary Table (Very Important)
 | Argument        | Meaning                            |
 | --------------- | ---------------------------------- |
 | `&thread`       | Stores thread ID                   |
