@@ -460,3 +460,47 @@ Improves performance — fork() becomes very fast.
 Efficient with exec() — often, child replaces memory soon after fork.
 
 Automatic isolation — processes don’t interfere with each other’s data.
+
+#### Watchdog Timer (WDT) 
+- Watchdog Timer (WDT) is a specialized hardware component—essentially a fail-safe countdown timer—designed to detect and recover from software malfunctions or system crashes.
+
+- Its primary role is to monitor the microcontroller's (MCU) execution and trigger a system reset if it determines the software has hung or entered an infinite loop.
+- 
+Let's Learn Together 🙃 #Day18 A Watchdog Timer (WDT) is a ...
+
+- The WDT operates as a continuous countdown (or count-up) mechanism that runs independently of the main CPU clock in many designs to ensure it remains functional even if the main clock fails. 
+
+    **Initialization:** The software sets a specific timeout value (e.g., 500ms or 2 seconds) and enables the timer.
+  
+    **"Kicking" the Dog:** Under normal conditions, the software must periodically reset the timer to its initial value before it reaches zero. This action is commonly referred to as "kicking," "feeding," or "petting" the dog.
+  
+    **Timeout & Reset:** If the software freezes (e.g., due to a deadlock or hardware failure), it stops kicking the dog. Once the timer expires, the WDT asserts a hardware reset signal to restart the MCU, restoring the system to a known good state. 
+
+Common Watchdog Modes
+
+As systems grow in complexity, different WDT modes have been developed to enhance safety: 
+
+    - Timeout Mode: The standard mode where a reset occurs only if the timer reaches zero.
+    
+    - Window Mode: Requires the software to kick the watchdog within a specific "window" of time. Kicking it too early or too late  
+    triggers a reset, preventing issues where a malfunctioning program might accidentally kick the dog too fast.
+    
+    - Q&A (Challenge-Response) Mode: The WDT issues a "challenge" (like a math problem), and the MCU must provide the correct answer         within the time window. This verifies that the software is not just running, but also executing logic correctly. 
+
+**Implementation Strategies**
+
+   - Internal WDT: Built directly into the microcontroller. It is cost-effective and easy to use but may be vulnerable if the entire chip (including its internal clock) fails.
+     
+    - External WDT: A separate physical IC that monitors the MCU. This provides higher reliability through redundancy, as it has its own power and clock source.
+    
+    - Task Monitoring: In Real-Time Operating Systems (RTOS), a "monitor task" only kicks the hardware watchdog if all other critical tasks have reported they are still alive. 
+
+- Why Watchdogs are Critical
+
+-Watchdogs are essential for unattended or mission-critical systems where a human cannot manually press a reset button, such as: 
+
+    - Space Probes: A software hang without a WDT would permanently disable the device.
+    - Medical Devices: Ensuring life-support equipment recovers instantly from transient glitches.
+    Industrial/Automotive: Preventing dangerous physical failures (e.g., a motor getting stuck at full speed) caused by software errors. 
+
+
