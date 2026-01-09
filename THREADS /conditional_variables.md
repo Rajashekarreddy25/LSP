@@ -19,7 +19,7 @@ while (avail == 0) {
 
 - Poor performance and scalability
 
-** Solution**
+**Solution**
 
 ➡️ Condition variables allow a thread to:
 
@@ -106,8 +106,8 @@ int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex);
 
 - More efficient
 
-**Use when:
-**
+**Use when:**
+
 - All waiting threads perform the same task
 
 - Only one thread needs to handle the change
@@ -130,8 +130,8 @@ int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex);
 
 - One thread does the work
 
-**Remaining threads:
-**
+**Remaining threads:**
+
 - Lock mutex
 
 - Find no work
@@ -146,8 +146,7 @@ int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex);
 
 #### 8. Condition Variables Have No Memory
 
-**Important property:
-**
+**Important property:**
 
 - If no thread is waiting when a condition variable is signaled, the signal is lost.
 
@@ -283,8 +282,8 @@ int pthread_cond_timedwait(
 );
 ```
 
-**Blocks until:
-**
+**Blocks until:**
+
 - Condition is signaled OR
 
 - Timeout expires
@@ -331,3 +330,83 @@ predicate: (avail > 0)
 **Condition variable means:**
 
 - “The predicate may now be true”
+
+### ✅ Producer–Consumer using Condition Variables (C / pthreads)
+
+- What this program shows
+
+- How a consumer waits using pthread_cond_wait()
+
+- How a producer signals using pthread_cond_signal()
+
+- Correct use of mutex + condition variable
+
+- Proper while loop for checking condition
+
+### 🔹 Program Code
+
+```
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <unistd.h>
+
+/* Shared data */
+int avail = 0;   // number of produced items
+
+/* Mutex and condition variable */
+pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t  cond = PTHREAD_COND_INITIALIZER;
+
+/* Producer thread */
+void* producer(void* arg)
+{
+    for (int i = 1; i <= 5; i++) {
+        sleep(1);   // simulate production time
+
+        pthread_mutex_lock(&mtx);
+
+        avail++;    // produce item
+        printf("Producer produced item %d (avail=%d)\n", i, avail);
+
+        pthread_mutex_unlock(&mtx);
+
+        pthread_cond_signal(&cond);  // notify consumer
+    }
+    return NULL;
+}
+
+/* Consumer thread */
+void* consumer(void* arg)
+{
+    for (int i = 1; i <= 5; i++) {
+
+        pthread_mutex_lock(&mtx);
+
+        /* Wait while no items are available */
+        while (avail == 0) {
+            printf("Consumer waiting...\n");
+            pthread_cond_wait(&cond, &mtx);
+        }
+
+        avail--;   // consume item
+        printf("Consumer consumed item %d (avail=%d)\n", i, avail);
+
+        pthread_mutex_unlock(&mtx);
+    }
+    return NULL;
+}
+
+int main()
+{
+    pthread_t prod, cons;
+
+    pthread_create(&prod, NULL, producer, NULL);
+    pthread_create(&cons, NULL, consumer, NULL);
+
+    pthread_join(prod, NULL);
+    pthread_join(cons, NULL);
+
+    return 0;
+}
+```
