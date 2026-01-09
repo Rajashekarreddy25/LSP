@@ -5,21 +5,21 @@
 - A mutex ensures that only one thread accesses a shared variable at a time.
 - However, a mutex cannot make a thread wait efficiently for a change in the state of a shared variable.
 - Without condition variables (busy waiting)
-  ```
+
+```
 while (avail == 0) {
     // keep checking
 }
 ```
+**Problems:**
 
-##### Problems:
+- Wastes CPU time
 
-Wastes CPU time
+- Thread runs continuously
 
-Thread runs continuously
+- Poor performance and scalability
 
-Poor performance and scalability
-
-###### Solution
+** Solution**
 
 ➡️ Condition variables allow a thread to:
 
@@ -33,7 +33,7 @@ Poor performance and scalability
 
 - Notify one or more waiting threads that a shared variable’s state has changed
 
-##### Important points:
+ **Important points:**
 
 - A condition variable does not store data
 
@@ -42,6 +42,7 @@ Poor performance and scalability
 - It must always be used together with a mutex
 
 #### 3. Relationship Between Mutex and Condition Variable
+
 - Object	Purpose
 - Mutex	Protects shared data
 - Condition Variable	Signals change in shared data
@@ -51,7 +52,9 @@ Poor performance and scalability
 - A condition variable is meaningless without a mutex.
 
 #### 4. Declaring and Initializing Condition Variables
+
 **4.1 Static Initialization**
+
 ```
 pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 ```
@@ -67,22 +70,26 @@ pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 ✔ Always operate on the original condition variable.
 
 #### 5. Core Condition Variable Functions
+
 **5.1 Signaling Functions**
+
 ```
 int pthread_cond_signal(pthread_cond_t *cond);
 int pthread_cond_broadcast(pthread_cond_t *cond);
+
 ```
 **Function	Behavior**
 - signal	Wakes one waiting thread
 - broadcast	Wakes all waiting threads
 
 **Both return:**
-```
-0 on success
 
-Positive error number on failure
-```
+- 0 on success
+
+- Positive error number on failure
+
 **5.2 Waiting Function**
+
 ```
 int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex);
 ```
@@ -91,7 +98,7 @@ int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex);
 
 - Blocks the calling thread until cond is signaled
 
-#### 6. Difference Between signal() and broadcast()
+#### Difference Between signal() and broadcast()
 
 **pthread_cond_signal()**
 
@@ -141,6 +148,7 @@ int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex);
 
 **Important property:
 **
+
 - If no thread is waiting when a condition variable is signaled, the signal is lost.
 
 **Therefore:**
@@ -161,6 +169,7 @@ int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex);
 ✔ No race condition is possible
 
 #### 10. Natural Pattern for Using Condition Variables
+
 ```
 pthread_mutex_lock(&mtx);
 
@@ -172,6 +181,7 @@ while (predicate_not_true) {
 
 pthread_mutex_unlock(&mtx);
 ```
+
 #### 11. Why while Is Mandatory (NOT if)
 
 - A thread must re-check the predicate after waking up.
@@ -190,15 +200,18 @@ while (avail == 0)
     pthread_cond_wait(&cond, &mtx);
 ```
 
-Incorrect:
+**Incorrect:**
+
 ```
 if (avail == 0)
     pthread_cond_wait(&cond, &mtx);
 ```
+
 #### 12. Spurious Wakeups
 
-**POSIX allows a thread to wake up:
-**
+**POSIX allows a thread to wake up:**
+
+
 -  Without any signal
 
 - Due to internal OS optimizations
@@ -208,6 +221,7 @@ if (avail == 0)
 - A wakeup does NOT guarantee the condition is true.
 
 #### 13. Example: Producer–Consumer Using Condition Variables
+
 **Shared Objects**
 ```
 pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
@@ -215,6 +229,7 @@ pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 int avail = 0;
 ```
 **Producer Thread**
+
 ```
 pthread_mutex_lock(&mtx);
 avail++;                     // produce item
@@ -222,7 +237,9 @@ pthread_mutex_unlock(&mtx);
 
 pthread_cond_signal(&cond);  // notify consumer
 ```
+
 **Consumer Thread**
+
 ```
 pthread_mutex_lock(&mtx);
 
@@ -234,15 +251,18 @@ avail--;  // consume item
 
 pthread_mutex_unlock(&mtx);
 ```
+
 #### 14. Order of signal() and unlock()
 
 **Allowed orders:**
+
 ```
 pthread_mutex_unlock(&mtx);
 pthread_cond_signal(&cond);
 ```
 
 or
+
 ```
 pthread_cond_signal(&cond);
 pthread_mutex_unlock(&mtx);
@@ -254,14 +274,15 @@ pthread_mutex_unlock(&mtx);
 - Some systems optimize this using wait morphing
 
 #### 15. Timed Waiting on Condition Variables
+
 ```
 int pthread_cond_timedwait(
     pthread_cond_t *cond,
     pthread_mutex_t *mutex,
     const struct timespec *abstime
 );
-
 ```
+
 **Blocks until:
 **
 - Condition is signaled OR
@@ -272,10 +293,11 @@ int pthread_cond_timedwait(
 
 #### 16. Dynamically Allocated Condition Variables
 **Initialization**
-```
-pthread_cond_init(&cond, NULL);
 
 ```
+pthread_cond_init(&cond, NULL);
+```
+
 **Required for:**
 
 - Stack-allocated variables
